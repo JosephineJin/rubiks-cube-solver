@@ -44,6 +44,7 @@ def _draw_face_patches(ax, x0: int, y0: int) -> List[plt.Rectangle]:
                 size,
                 size,
                 edgecolor="black",
+                linewidth=1.5,
                 facecolor="gray",
             )
             ax.add_patch(rect)

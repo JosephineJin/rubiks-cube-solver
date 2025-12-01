@@ -19,7 +19,7 @@ MOVE_NAMES: List[str] = [
     "B", "B2", "B'",
 ]
 
-# Helpers ------------------------------------------------------------------
+# Helpers
 
 
 def _rotate_face_cw(face: List[str]) -> List[str]:
@@ -38,7 +38,7 @@ def _rotate_face_180(face: List[str]) -> List[str]:
     return [face[i] for i in [8, 7, 6, 5, 4, 3, 2, 1, 0]]
 
 
-# Base moves (clockwise quarter turns) -------------------------------------
+# Base moves (clockwise quarter turns)
 
 
 def _move_U_cw(cube: CubeState) -> None:
@@ -151,7 +151,7 @@ def apply_move_sequence(cube: CubeState, moves: List[str]) -> None:
         apply_move(cube, m)
 
 
-# Convenience mapping if you want functions directly
+# Convenience mapping
 MOVE_TABLE: Dict[str, Callable[[CubeState], None]] = {
     m: (lambda c, mm=m: apply_move(c, mm)) for m in MOVE_NAMES
 }

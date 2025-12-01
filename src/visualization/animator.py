@@ -1,11 +1,3 @@
-# src/visualization/animator.py
-
-"""
-Visualizer / animator utilities.
-
-This version uses a single matplotlib window and updates it for each move.
-"""
-
 from __future__ import annotations
 from typing import List
 import time
@@ -40,16 +32,22 @@ def animate_solution(
         fig, ax = _init_axes()
         patch_map = create_cube_patches(ax)
         update_cube_patches(patch_map, state)
+        ax.set_title("2D View – Start", fontsize=12)
         fig.canvas.draw()
         plt.show(block=False)
 
-    for m in moves:
+    total = len(moves)
+
+    for step, m in enumerate(moves, start=1):
         print(f"Move: {m}")
         apply_move(state, m)
         print("Solved?", state.is_solved())
 
         if use_plot and patch_map is not None:
             update_cube_patches(patch_map, state)
+            # Update title with progress + move name
+            ax = plt.gca()
+            ax.set_title(f"2D View – Move {step}/{total}: {m}", fontsize=12)
             fig.canvas.draw()
             plt.pause(delay)
         else:
@@ -58,7 +56,8 @@ def animate_solution(
     print("Final solved?", state.is_solved())
 
     if use_plot:
-        # Keep window open at the end until user closes it
+        ax = plt.gca()
+        ax.set_title("2D View – Final", fontsize=12)
         plt.pause(0.001)
-        print("Animation complete. Close the figure window to exit.")
+        print("2D animation complete. Close the figure window to exit.")
         plt.show()

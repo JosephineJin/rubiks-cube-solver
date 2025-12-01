@@ -3,7 +3,7 @@ Iterative Deepening A* (IDA*) solver.
 """
 
 from __future__ import annotations
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Dict
 from .base_solver import BaseSolver
 from ..cube.cube_state import CubeState
 from ..cube.move_generator import MOVE_NAMES, apply_move
@@ -18,14 +18,25 @@ class IDAStarSolver(BaseSolver):
         self.heuristic = heuristic
         self.max_depth = max_depth
 
+        # For instrumentation (optional)
+        self.nodes_expanded: int = 0
+
+        # Transposition table: state_string -> best g so far
+        self.transposition: Dict[str, int] = {}
+
     def solve(self, start: CubeState) -> List[str]:
         if start.is_solved():
+            self.nodes_expanded = 0
+            self.transposition.clear()
             return []
 
         bound = self.heuristic(start)
         path: List[str] = []
 
         while bound <= self.max_depth:
+            self.nodes_expanded = 0
+            self.transposition.clear()
+
             t = self._search(start.copy(), path, 0, bound, None)
             if isinstance(t, list):  # found solution
                 return t
@@ -43,6 +54,17 @@ class IDAStarSolver(BaseSolver):
         bound: int,
         last_move: Optional[str],
     ) -> int | List[str]:
+        # Transposition table check
+        key = node.to_string()
+        best_g = self.transposition.get(key)
+        if best_g is not None and g >= best_g:
+            # We've already reached this state cheaper or equal -> prune
+            return float("inf")
+        # Record best g for this state
+        self.transposition[key] = g
+
+        self.nodes_expanded += 1
+
         f = g + self.heuristic(node)
         if f > bound:
             return f
